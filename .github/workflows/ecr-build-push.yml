@@ -20,11 +20,11 @@ jobs:
       list: ${{ steps.list.outputs.list }}
     steps:
       - id: list
-        run: echo 'list=["chatbot"]' >> "$GITHUB_OUTPUT"
-        All: ["accounting","ad","agent","cart","chatbot","checkout","currency","email",
-              "flagd-ui","fraud-detection","frontend","frontend-proxy","image-provider",
-              "kafka","load-generator","mcp","opamp-server","opensearch","payment",
-              "product-catalog","quote","recommendation","shipping","telemetry-docs"]
+        run: echo 'list=["accounting","ad","agent","cart","chatbot","checkout","currency","email","flagd-ui","fraud-detection","frontend","frontend-proxy","image-provider","kafka","load-generator","mcp","opamp-server","opensearch","payment","product-catalog","quote","recommendation","shipping","telemetry-docs"]' >> "$GITHUB_OUTPUT"
+        # All: ["accounting","ad","agent","cart","chatbot","checkout","currency","email",
+        #       "flagd-ui","fraud-detection","frontend","frontend-proxy","image-provider",
+        #       "kafka","load-generator","mcp","opamp-server","opensearch","payment",
+        #       "product-catalog","quote","recommendation","shipping","telemetry-docs"]
 
   build-and-push:
     name: Build ${{ matrix.service }}
@@ -97,15 +97,14 @@ jobs:
             ${{ steps.ecr.outputs.registry }}/${{ env.IMAGE }}:${{ github.run_number }}
             ${{ steps.ecr.outputs.registry }}/${{ env.IMAGE }}:latest
 
- 
-  # ---- 2. Point the k8s-file repo at the new images; Argo CD deploys them ----
+  # # ---- 2. Point the k8s-file repo at the new images; Argo CD deploys them ----
   # update-k8s-manifests:
   #   needs: [services, build-and-push] # runs only if every image built
-  #   runs-on: self-hosted
+  #   runs-on: ubuntu-latest
   #   steps:
   #     - uses: actions/checkout@v7
   #       with:
-  #         repository: digitalwitchdemo/k8s-file
+  #         repository: CyberForge1/k8s-file
   #         token: ${{ secrets.K8S_REPO_TOKEN }}
 
   #     - name: Set the new image tag and push
