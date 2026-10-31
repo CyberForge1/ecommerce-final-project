@@ -100,11 +100,11 @@ jobs:
   # ---- 2. Point the k8s-file repo at the new images; Argo CD deploys them ----
   # update-k8s-manifests:
   #   needs: [services, build-and-push] # runs only if every image built
-  #   runs-on: self-hosted
+  #   runs-on: ubuntu-latest
   #   steps:
   #     - uses: actions/checkout@v7
   #       with:
-  #         repository: digitalwitchdemo/k8s-file
+  #         repository: CyberForge1/k8s-file
   #         token: ${{ secrets.K8S_REPO_TOKEN }}
 
   #     - name: Set the new image tag and push
