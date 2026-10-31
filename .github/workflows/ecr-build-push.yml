@@ -1,17 +1,17 @@
 name: Build and Push Images to ECR
-
+ 
 on:
   push:
     branches: [main]
     paths: ['src/**', 'pb/**', '.env', '.github/workflows/ecr-build-push.yml']
   workflow_dispatch: {}
-
+ 
 permissions:
   id-token: write 
   contents: read
-
+ 
 concurrency: ecr-build-push
-
+ 
 jobs:
   # ---- 0. The services to build: edit this one list ----
   services:
@@ -25,7 +25,7 @@ jobs:
         #       "flagd-ui","fraud-detection","frontend","frontend-proxy","image-provider",
         #       "kafka","load-generator","mcp","opamp-server","opensearch","payment",
         #       "product-catalog","quote","recommendation","shipping","telemetry-docs"]
-
+ 
   build-and-push:
     name: Build ${{ matrix.service }}
     needs: services
@@ -40,33 +40,33 @@ jobs:
       DOCKERFILE: ${{ matrix.service == 'cart' && 'src/cart/src/Dockerfile' || format('src/{0}/Dockerfile', matrix.service) }}
     steps:
       - uses: actions/checkout@v7
-
+ 
       - name: Log in to AWS
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
-
+ 
       - name: who ami
         run: |
            whoami
-
+ 
       - name: Log in to ECR (our images)
         id: ecr
         uses: aws-actions/amazon-ecr-login@v2
-
+ 
       - name: Log in to ECR Public (base images, avoids rate limits)
         uses: aws-actions/amazon-ecr-login@v2
         with:
           registry-type: public
-
+ 
       - name: Create the ECR repository if it doesn't exist
         run: aws ecr describe-repositories --repository-names "$IMAGE" ||
              aws ecr create-repository --repository-name "$IMAGE" --image-scanning-configuration scanOnPush=true
-
+ 
       - name: Read version pins from .env
         run: grep -E '^(OTEL_JAVA_AGENT_VERSION|OPENTELEMETRY_CPP_VERSION|OPAMP_GO_REF)=' .env >> "$GITHUB_ENV"
-
+ 
       # Self-hosted runner: free disk space left over from earlier builds
       # (layers are still reused from the GitHub Actions cache)
       - name: Free disk space
@@ -75,9 +75,9 @@ jobs:
           docker builder prune -af || true
           docker image prune -af || true
           df -h / | tail -1
-
+ 
       - uses: docker/setup-buildx-action@v4
-
+ 
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
@@ -96,18 +96,8 @@ jobs:
           tags: |
             ${{ steps.ecr.outputs.registry }}/${{ env.IMAGE }}:${{ github.run_number }}
             ${{ steps.ecr.outputs.registry }}/${{ env.IMAGE }}:latest
-
+ 
   # ---- 2. Point the k8s-file repo at the new images; Argo CD deploys them ----
-<<<<<<< HEAD
-  # update-k8s-manifests:
-  #   needs: [services, build-and-push] # runs only if every image built
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v7
-  #       with:
-  #         repository: CyberForge1/k8s-file
-  #         token: ${{ secrets.K8S_REPO_TOKEN }}
-=======
   update-k8s-manifests:
     needs: [services, build-and-push] # runs only if every image built
     runs-on: ubuntu-latest
@@ -116,8 +106,7 @@ jobs:
         with:
           repository: CyberForge1/k8s-file
           token: ${{ secrets.K8S_REPO_TOKEN }}
->>>>>>> cf56c16edabb37b2dc94468cd412a642a4eac4fb
-
+ 
       - name: Set the new image tag and push
         env:
           SERVICES: ${{ join(fromJSON(needs.services.outputs.list), ' ') }}
