@@ -116,7 +116,7 @@ jobs:
           for svc in $SERVICES; do
             sed -i -E "/ecomerce\/$svc\$/{n;s|(newTag: ).*|\1\"$TAG\"|}" */kustomization.yaml
           done
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "CyberForge1"
+          git config user.email "340667234+CyberForge1@users.noreply.github.com"
           git commit -am "Deploy images from build #$TAG" -m "Commit: $GITHUB_SHA" || exit 0 # nothing changed
           git push
