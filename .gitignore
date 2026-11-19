@@ -58,3 +58,6 @@ src/frontend/cypress/screenshots
 src/shipping/target/
 
 !src/currency/build
+
+!/src/flagd-ui/rel/overlays/bin/
+!/src/currency/proto/
