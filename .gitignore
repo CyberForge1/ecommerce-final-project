@@ -61,3 +61,5 @@ src/shipping/target/
 
 !/src/flagd-ui/rel/overlays/bin/
 !/src/currency/proto/
+
+!/src/flagd-ui/assets/vendor/
